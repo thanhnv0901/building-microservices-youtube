@@ -97,4 +97,11 @@ You can send a message to the server using the following payload
   "Base": "EUR",
   "Destination": "GBP"
 }
+
+{
+  "Base": "EUR",
+  "Destination": "EUR"
+}
 ```
+
+grpcurl --plaintext -d '{"Base": "EUR", "Destination": "EUR"}' localhost:9092 Currency/GetRate

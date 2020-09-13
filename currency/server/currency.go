@@ -66,14 +66,25 @@ func (c *Currency) GetRate(ctx context.Context, rr *protos.RateRequest) (*protos
 	// Validate parameters base currency can not be the same as destination
 	if rr.Base == rr.Destination {
 		// create the grpc error and return to the client
-		err := status.Errorf(
-			codes.InvalidArgument,
+		// err := status.Errorf(
+		// 	codes.InvalidArgument,
+		// 	"Base rate %s can not be equal to destination rate %s",
+		// 	rr.Base.String(),
+		// 	rr.Destination.String(),
+		// )
+
+		newStatus := status.Newf(codes.InvalidArgument,
 			"Base rate %s can not be equal to destination rate %s",
 			rr.Base.String(),
-			rr.Destination.String(),
-		)
+			rr.Destination.String())
 
-		return nil, err
+		err, wde := newStatus.WithDetails(rr)
+
+		if wde != nil {
+			return nil, wde
+		}
+
+		return nil, err.Err()
 	}
 
 	rate, err := c.rates.GetRate(rr.GetBase().String(), rr.GetDestination().String())
